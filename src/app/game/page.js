@@ -11,19 +11,17 @@ export default function Game() {
   const [displayedLines, setDisplayedLines] = useState(0);
   const [animatedLines, setAnimatedLines] = useState(0);
   const [canvasSize, setCanvasSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: 0, // 초기값을 0으로 설정
+    height: 0,
   });
 
-    // 리셋 함수 정의
-    const resetCanvas = () => {
-      setLines([]);
-      generateLines();
-    };
+  // 리셋 함수 정의
+  const resetCanvas = () => {
+    setLines([]);
+    generateLines();
+  };
 
   const { speed, interval, linesPerTick, handleKeyPress } = useKeyControls(resetCanvas);
-
-
 
   // 창 크기에 맞게 canvas 크기 조정
   useEffect(() => {
@@ -34,14 +32,20 @@ export default function Game() {
       });
     };
 
-    window.addEventListener('resize', handleResize);
+    // 클라이언트에서만 이벤트 리스너 추가
+    if (typeof window !== 'undefined') {
+      handleResize(); // 초기 크기 설정
+      window.addEventListener('resize', handleResize);
+    }
 
     if (lines.length === 0) {
       generateLines();
     }
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('resize', handleResize);
+      }
     };
   }, [lines]);
 
@@ -69,9 +73,13 @@ export default function Game() {
 
   // 키보드 입력 처리
   useEffect(() => {
-    window.addEventListener('keydown', handleKeyPress);
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', handleKeyPress);
+    }
     return () => {
-      window.removeEventListener('keydown', handleKeyPress);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('keydown', handleKeyPress);
+      }
     };
   }, [handleKeyPress]);
 
