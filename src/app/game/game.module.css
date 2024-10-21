@@ -1,0 +1,36 @@
+/* app/game/game.module.css */
+
+.container {
+  position: relative;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: black;
+}
+
+.title {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: white;
+  text-shadow: 0 0 10px red;
+  font-size: 2rem;
+  z-index: 10;
+}
+
+.info {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  color: white;
+  text-shadow: 0 0 10px red;
+  font-size: 1.2rem;
+  z-index: 10;
+}
+
+.canvas {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}

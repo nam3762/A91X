@@ -1,0 +1,6 @@
+/* app/components/BeamLine.module.css */
+.line {
+  position: absolute;
+  height: 4px;
+  transform-origin: left center;
+}
