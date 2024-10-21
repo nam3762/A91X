@@ -55,11 +55,12 @@ export default function Game() {
       const updateAnimatedLines = () => {
         setAnimatedLines((prev) => prev + 1); // 1씩 빠르게 증가
       };
-      const animationInterval = setInterval(updateAnimatedLines, 30); // 30ms마다 1씩 증가
+      const animationInterval = setInterval(updateAnimatedLines, (currentTimer / 10 ?? 30) /linesPerTick); // 30ms마다 1씩 증가
       return () => clearInterval(animationInterval);
     }
   }, [animatedLines, displayedLines]);
 
+  let currentTimer;
   // 선을 그리는 로직
   useEffect(() => {
     if (animationIndex < lines.length) {
@@ -67,6 +68,7 @@ export default function Game() {
         setAnimationIndex((prevIndex) => prevIndex + linesPerTick); // 동시에 n개의 선 생성
         setDisplayedLines((prev) => prev + linesPerTick); // 즉시 표시되는 선의 개수는 n개씩 증가
       }, interval);
+      currentTimer = interval;
       return () => clearTimeout(timer);
     }
   }, [animationIndex, lines, interval, linesPerTick]);
