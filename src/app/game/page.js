@@ -55,7 +55,7 @@ export default function Game() {
       const updateAnimatedLines = () => {
         setAnimatedLines((prev) => prev + 1); // 1씩 빠르게 증가
       };
-      const animationInterval = setInterval(updateAnimatedLines, (currentTimer / 10 ?? 30) /linesPerTick); // 30ms마다 1씩 증가
+      const animationInterval = setInterval(updateAnimatedLines, (currentTimer / 10 ?? 30) / linesPerTick); // 30ms마다 1씩 증가
       return () => clearInterval(animationInterval);
     }
   }, [animatedLines, displayedLines]);
@@ -131,6 +131,10 @@ export default function Game() {
     setAnimatedLines(0);  // 리셋 시 사용자에게 보여줄 선 개수도 초기화
   };
 
+  const resetAll = () => {
+    resetCanvas();
+  }
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Rapid Beam Booster</h1>
@@ -139,6 +143,7 @@ export default function Game() {
         <p>Speed: {speed.toFixed(2)}</p>
         <p>Time Interval: {interval} ms</p>
         <p>Generated Lines per Time: {linesPerTick}</p>
+        <button className={styles.resetButton} onClick={resetAll}>Reset</button>
       </div>
       <div className={styles.canvas} style={{ width: canvasSize.width, height: canvasSize.height }}>
         {lines.slice(0, displayedLines).map((line) => (
