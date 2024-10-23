@@ -41,5 +41,6 @@ export default function useKeyControls(resetCanvas) {
     }
   };
 
-  return { speed, interval, linesPerTick, handleKeyPress };
+  // setter 함수들도 반환
+  return { speed, interval, linesPerTick, handleKeyPress, setSpeed, setIntervalValue, setLinesPerTick };
 }

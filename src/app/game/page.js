@@ -11,19 +11,18 @@ export default function Game() {
   const [displayedLines, setDisplayedLines] = useState(0);
   const [animatedLines, setAnimatedLines] = useState(0);
   const [canvasSize, setCanvasSize] = useState({
-    width: 0, // 초기값을 0으로 설정
+    width: 0,
     height: 0,
   });
 
-  // 리셋 함수 정의
   const resetCanvas = () => {
     setLines([]);
     generateLines();
   };
 
-  const { speed, interval, linesPerTick, handleKeyPress } = useKeyControls(resetCanvas);
+  const { speed, interval, linesPerTick, handleKeyPress, setSpeed, setIntervalValue, setLinesPerTick } =
+    useKeyControls(resetCanvas);
 
-  // 창 크기에 맞게 canvas 크기 조정
   useEffect(() => {
     const handleResize = () => {
       setCanvasSize({
@@ -32,9 +31,8 @@ export default function Game() {
       });
     };
 
-    // 클라이언트에서만 이벤트 리스너 추가
     if (typeof window !== 'undefined') {
-      handleResize(); // 초기 크기 설정
+      handleResize();
       window.addEventListener('resize', handleResize);
     }
 
@@ -49,31 +47,31 @@ export default function Game() {
     };
   }, [lines]);
 
-  // 동시 생성된 선 개수를 빠르게 1씩 증가시키기 위한 애니메이션
   useEffect(() => {
     if (animatedLines < displayedLines) {
       const updateAnimatedLines = () => {
-        setAnimatedLines((prev) => prev + 1); // 1씩 빠르게 증가
+        setAnimatedLines((prev) => prev + 1);
       };
-      const animationInterval = setInterval(updateAnimatedLines, (currentTimer / 10 ?? 30) / linesPerTick); // 30ms마다 1씩 증가
+      const animationInterval = setInterval(
+        updateAnimatedLines,
+        (currentTimer / 10 ?? 30) / linesPerTick
+      );
       return () => clearInterval(animationInterval);
     }
   }, [animatedLines, displayedLines]);
 
   let currentTimer;
-  // 선을 그리는 로직
   useEffect(() => {
     if (animationIndex < lines.length) {
       const timer = setTimeout(() => {
-        setAnimationIndex((prevIndex) => prevIndex + linesPerTick); // 동시에 n개의 선 생성
-        setDisplayedLines((prev) => prev + linesPerTick); // 즉시 표시되는 선의 개수는 n개씩 증가
+        setAnimationIndex((prevIndex) => prevIndex + linesPerTick);
+        setDisplayedLines((prev) => prev + linesPerTick);
       }, interval);
       currentTimer = interval;
       return () => clearTimeout(timer);
     }
   }, [animationIndex, lines, interval, linesPerTick]);
 
-  // 키보드 입력 처리
   useEffect(() => {
     if (typeof window !== 'undefined') {
       window.addEventListener('keydown', handleKeyPress);
@@ -91,7 +89,7 @@ export default function Game() {
 
     const getRandomEdgePoint = (excludeEdge = null) => {
       const edges = ['top', 'bottom', 'left', 'right'];
-      const availableEdges = excludeEdge ? edges.filter(edge => edge !== excludeEdge) : edges;
+      const availableEdges = excludeEdge ? edges.filter((edge) => edge !== excludeEdge) : edges;
       const edge = availableEdges[Math.floor(Math.random() * availableEdges.length)];
 
       switch (edge) {
@@ -104,7 +102,7 @@ export default function Game() {
         case 'right':
           return { x: canvasSize.width, y: Math.random() * canvasSize.height, edge: 'right' };
         default:
-          return { x: 0, y: 0, edge: 'top' }; // fallback
+          return { x: 0, y: 0, edge: 'top' };
       }
     };
 
@@ -127,24 +125,47 @@ export default function Game() {
 
     setLines(newLines);
     setAnimationIndex(0);
-    setDisplayedLines(0); // 리셋 시 즉시 그려지는 선 개수 초기화
-    setAnimatedLines(0);  // 리셋 시 사용자에게 보여줄 선 개수도 초기화
+    setDisplayedLines(0);
+    setAnimatedLines(0);
   };
 
   const resetAll = () => {
     resetCanvas();
-  }
+  };
 
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Rapid Beam Booster</h1>
       <div className={styles.info}>
-        <p>Number of Lines: {animatedLines}</p> {/* 사용자가 보는 선 개수 (빠르게 증가) */}
+        <p>Number of Lines: {animatedLines}</p>
         <p>Speed: {speed.toFixed(2)}</p>
         <p>Time Interval: {interval} ms</p>
         <p>Generated Lines per Time: {linesPerTick}</p>
-        <button className={styles.resetButton} onClick={resetAll}>Reset</button>
+
+        <div className={styles.buttonGroup}>
+          <div>
+            <p className='text-sm'>Speed</p>
+            <button className='px-4' onClick={() => setSpeed((prev) => Math.max(0.05, prev - 0.05))}>+</button>
+            <button className='px-4' onClick={() => setSpeed((prev) => prev + 0.05)}>-</button>
+          </div>
+          <div>
+            <p className='text-sm'>Time</p>
+            <button className='px-4' onClick={() => setIntervalValue((prev) => Math.max(10, prev - 10))}>+</button>
+            <button className='px-4' onClick={() => setIntervalValue((prev) => prev + 10)}>-</button>
+          </div>
+          <div className={styles.lineButtons}>
+            {[...Array(10).keys()].map((num) => (
+              <button className='px-2 text-sm' key={num} onClick={() => setLinesPerTick(num)}>
+                {num}
+              </button>
+            ))}
+          </div>
+          <button className='my-8' onClick={resetAll}>Reset</button>
+        </div>
+
+
       </div>
+
       <div className={styles.canvas} style={{ width: canvasSize.width, height: canvasSize.height }}>
         {lines.slice(0, displayedLines).map((line) => (
           <BeamLine
