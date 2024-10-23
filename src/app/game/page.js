@@ -14,6 +14,7 @@ export default function Game() {
     width: 0,
     height: 0,
   });
+  const [infoVisible, setInfoVisible] = useState(false); // info 섹션을 숨기기 위한 상태
 
   const resetCanvas = () => {
     setLines([]);
@@ -136,35 +137,45 @@ export default function Game() {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>Rapid Beam Booster</h1>
-      <div className={styles.info}>
-        <p>Number of Lines: {animatedLines}</p>
-        <p>Speed: {speed.toFixed(2)}</p>
-        <p>Time Interval: {interval} ms</p>
-        <p>Generated Lines per Time: {linesPerTick}</p>
 
-        <div className={styles.buttonGroup}>
-          <div>
-            <p className='text-sm'>Speed</p>
-            <button className='px-4' onClick={() => setSpeed((prev) => Math.max(0.05, prev - 0.05))}>+</button>
-            <button className='px-4' onClick={() => setSpeed((prev) => prev + 0.05)}>-</button>
+      {/* Floating button to toggle info section */}
+      <button
+        className={styles.floatingButton}
+        onClick={() => setInfoVisible(!infoVisible)}
+      >
+        {infoVisible ? 'Hide Settings' : 'Show Settings'}
+      </button>
+
+      {/* Info section with toggle */}
+      {infoVisible && (
+        <div className={styles.info}>
+          <p>Number of Lines: {animatedLines}</p>
+          <p>Speed: {speed.toFixed(2)}</p>
+          <p>Time Interval: {interval} ms</p>
+          <p>Generated Lines per Time: {linesPerTick}</p>
+
+          <div className={styles.buttonGroup}>
+            <div>
+              <p className="text-sm">Speed</p>
+              <button className="px-4" onClick={() => setSpeed((prev) => Math.max(0.05, prev - 0.05))}>+</button>
+              <button className="px-4" onClick={() => setSpeed((prev) => prev + 0.05)}>-</button>
+            </div>
+            <div>
+              <p className="text-sm">Time</p>
+              <button className="px-4" onClick={() => setIntervalValue((prev) => Math.max(10, prev - 10))}>+</button>
+              <button className="px-4" onClick={() => setIntervalValue((prev) => prev + 10)}>-</button>
+            </div>
+            <div className={styles.lineButtons}>
+              {[...Array(10).keys()].map((num) => (
+                <button className="px-2 text-sm" key={num} onClick={() => setLinesPerTick(num)}>
+                  {num}
+                </button>
+              ))}
+            </div>
+            <button className="my-8" onClick={resetAll}>Reset</button>
           </div>
-          <div>
-            <p className='text-sm'>Time</p>
-            <button className='px-4' onClick={() => setIntervalValue((prev) => Math.max(10, prev - 10))}>+</button>
-            <button className='px-4' onClick={() => setIntervalValue((prev) => prev + 10)}>-</button>
-          </div>
-          <div className={styles.lineButtons}>
-            {[...Array(10).keys()].map((num) => (
-              <button className='px-2 text-sm' key={num} onClick={() => setLinesPerTick(num)}>
-                {num}
-              </button>
-            ))}
-          </div>
-          <button className='my-8' onClick={resetAll}>Reset</button>
         </div>
-
-
-      </div>
+      )}
 
       <div className={styles.canvas} style={{ width: canvasSize.width, height: canvasSize.height }}>
         {lines.slice(0, displayedLines).map((line) => (
